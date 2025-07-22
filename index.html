@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projekt Chimera: Das Goldene Zeitalter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0a0a1a;
+            color: #e0e0e0;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Concept_Mars_colony.jpg'); /* NASA public domain Mars-Siedlung Konzept (frei nutzbar) */
+            background-size: cover;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .resource-card {
+            background-color: rgba(20, 20, 40, 0.7);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+        .action-button {
+            background-color: rgba(0, 100, 100, 0.6);
+            border: 1px solid rgba(0, 255, 255, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .action-button:hover {
+            background-color: rgba(0, 200, 200, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+        .action-button:disabled {
+            background-color: rgba(50, 50, 50, 0.5);
+            border-color: rgba(100, 100, 100, 0.5);
+            cursor: not-allowed;
+        }
+        .log-entry {
+            border-left: 2px solid rgba(0, 255, 255, 0.5);
+        }
+        .progress-bar-container {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        .progress-bar {
+            background: linear-gradient(90deg, rgba(0,255,255,1) 0%, rgba(0,150,255,1) 100%);
+            transition: width 0.5s ease-in-out;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+        }
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background-color: #0a0a1a;
+            border: 1px solid rgba(0, 255, 255, 0.5);
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .has-tooltip:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .gif-illustration {
+            width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+        }
+        .flash-light {
+            animation: sos-flash 2s infinite;
+        }
+        @keyframes sos-flash {
+            0% { background-color: rgba(255, 255, 255, 0); }
+            10% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            20% { background-color: rgba(255, 255, 255, 0); }
+            30% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            40% { background-color: rgba(255, 255, 255, 0); }
+            50% { background-color: rgba(255, 255, 255, 1); } /* Short */
+            60% { background-color: rgba(255, 255, 255, 0); }
+            70% { background-color: rgba(255, 255, 255, 1); } /* Long */
+            90% { background-color: rgba(255, 255, 255, 0); }
+            100% { background-color: rgba(255, 255, 255, 0); }
+        }
+        /* Neu: Metamorphose-Effekte */
+        .metamorphose-glow {
+            animation: glow-pulse 2s infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+        }
+        @keyframes glow-pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div id="game-container" class="max-w-7xl mx-auto">
+        <!-- HEADER -->
+        <header class="text-center mb-8">
+            <h1 class="font-orbitron text-3xl md:text-5xl font-bold text-cyan-300 tracking-wider">
+                PROJEKT CHIMERA
+            </h1>
+            <p class="text-cyan-100">
+                Operation: Das Goldene Zeitalter // RUNDE:
+                <span id="turn-counter">1</span>
+            </p>
+            <!-- Illustration GIF for game (e.g., climate crisis animation) -->
+            <img src="https://media.giphy.com/media/3o7bu3XilJ5BOiSGic/giphy.gif" alt="Climate Crisis GIF" class="gif-illustration">
+            <!-- SOS Morse Code Button -->
+            <button id="sos-button" class="action-button p-2 mt-4">Send SOS Signal (Light App Reaction)</button>
+            <!-- Reset Button (neu hinzugefügt für Tests) -->
+            <button id="reset-button" class="action-button p-2 mt-4 ml-4">Spiel zurücksetzen</button>
+        </header>
+        <!-- MAIN GRID -->
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- LEFT COLUMN: RESOURCES & PROGRESS -->
+            <section class="lg:col-span-1 space-y-6">
+                <!-- RESOURCES -->
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Kommando-Ressourcen
+                    </h2>
+                    <div id="resources-grid" class="grid grid-cols-2 gap-4">
+                        <!-- Resources will be injected here by JS -->
+                    </div>
+                </div>
+                <!-- PROGRESS -->
+                <div class="resource-card rounded-lg p-4">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Globale Projekte
+                    </h2>
+                    <div id="progress-bars" class="space-y-4">
+                        <!-- Progress bars will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+            <!-- MIDDLE COLUMN: ACTIONS -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Gambit-Matrix
+                    </h2>
+                    <div id="actions-container" class="space-y-3">
+                        <!-- Action buttons will be injected here by JS -->
+                    </div>
+                    <!-- MOVES GIF on Gambit click -->
+                    <img id="moves-gif" src="https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif" alt="MOVES GIF" class="gif-illustration hidden">
+                    <!-- TWISTS GIF on Gambit click -->
+                    <img id="twists-gif" src="https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif" alt="TWISTS GIF" class="gif-illustration hidden">
+                </div>
+            </section>
+            <!-- RIGHT COLUMN: LOG & EVENTS -->
+            <section class="lg:col-span-1 space-y-4">
+                <div class="resource-card rounded-lg p-4 h-full">
+                    <h2 class="font-orbitron text-xl mb-4 border-b border-cyan-700 pb-2">
+                        Operations-Log
+                    </h2>
+                    <!-- Looping Game Movie/GIF in Log -->
+                    <img src="https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif" alt="Game Loop GIF" class="gif-illustration">
+                    <div id="log-container" class="h-96 overflow-y-auto pr-2 space-y-3">
+                        <!-- Log entries will be injected here by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- MODAL FOR EVENTS/VICTORY/LEVY LEGACY -->
+    <div id="modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-backdrop">
+        <div class="modal-content rounded-lg p-8 m-4 max-w-lg w-full shadow-2xl shadow-cyan-500/20">
+            <h3 id="modal-title" class="font-orbitron text-2xl mb-4 text-cyan-300"></h3>
+            <p id="modal-body" class="mb-6"></p>
+            <button id="modal-close" class="w-full action-button p-2 rounded-lg font-bold">Weiter</button>
+        </div>
+    </div>
+    <script>
+        // Levy Legacy Excerpts (summarized and integrated)
+        const levyLegacyText = [
+            "For a good part of my life, I read about the great booms and busts of history—the South Sea bubble, the tulip mania, the 1929 crash—but in the late 1990s, I knew my bubble had finally come. I’ve had two loves in my life: One is the stock market, the other psychology.",
+            "Nothing ever happens without people making decisions. Even the bubbles wouldn’t be worth talking about without discussing the psychology that drove them.",
+            "The moods of the market affect not only stock prices but also the fortunes of business. The Internet stock craze convinced me that there has never been a more important time to come to grips with what has happened to the markets.",
+            "One can only hope that with experience will come the ability to recognize those things that do not change, even as fashions come and go. I’m fond of the remark, attributed to Mark Twain, that 'history does not repeat itself, at best it sometimes rhymes.'",
+            "Markets affect investor psychology, but investor psychology also affects markets. Basically, we all live three lives: our life, the life of our parents, and that of our children.",
+            "Good times breed laxity, laxity breeds unreliable numbers, and ultimately, unreliable numbers bring about bad times. This simple rhythm of markets is as predictable as human avarice.",
+            "The message is that mood or investor psychology is as important to markets as is information. It requires tremendous discipline to apply this understanding to one’s behavior.",
+            "Why should the market be any more perfect than the very human emotions and calculations that drive it? Investors overreact, and so do markets. Investors get swept up in moods, and so do markets."
+        ];
+
+        // --- GAME STATE INITIALIZATION (erweitert um Metamorphose und Kater) ---
+        let gameState = {
+            turn: 1,
+            levyRounds: 0,
+            inLevyCycle: false,
+            resources: {
+                kapital: { name: "Kapital (Mrd.)", value: 10, icon: '💰'},
+                daten: { name: "Datenströme (ZFlops)", value: 5, icon: '🌐'},
+                legitimitaet: { name: "Legitimität (%)", value: 75, icon: '🏛️'},
+                hebel: { name: "Hebel (Punkte)", value: 0, icon: '⚖️'},
+            },
+            progress: {
+                theraFond: { name: "Thera-Climafonds", value: 0, goal: 1000, unlocked: false, description: "Baut den Fonds auf, um globale Projekte zu finanzieren."},
+                github: { name: "GitHub Kontrolle", value: 0, goal: 100, description: "Erlange die Kontrolle über die wichtigste Code-Plattform der Welt, um 'Hebel' auf die Tech-Industrie zu bekommen."},
+                klima: { name: "Klimastabilisierung", value: 0, goal: 100, unlocked: false, description: "Reduziere die globale Erwärmung durch Geo-Engineering."},
+                mars: { name: "Mars-Kolonie", value: 0, goal: 200, unlocked: false, description: "Errichte eine autarke Basis auf dem Mars."},
+                ceres: { name: "Ceres-Mission", value: 0, goal: 100, unlocked: false, description: "Starte eine Bergbaumission im Asteroidengürtel."},
+            },
+            gameOver: false,
+            chimmyState: 'CHIMMY',  // Start-State für Metamorphose
+            kosmischerKaterActive: false  // Symbiont-Status
+        };
+
+        // --- DREHBUCH SLOTS (erweitert) ---
+        const drehbuchSlots = [
+            { id: 'ruf_zum_handeln', text: "EXT. NEUE ERDE – GOLDENE EBENEN – TAG: Chanelle rennt lachend durch das Gras... [PSPS II: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut.']", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🚀', voiceText: 'Der Alpha und Omega hat uns dieses Zeitalter anvertraut. Die Mission beginnt von Neuem.' },
+            { id: 'letzter_aufstand', text: "EXT. RUINEN DER ALTEN WELT – TAG: Henry führt seine Anhänger... [Henry: 'Wir werden ihr Paradies in den Abgrund ziehen.']", gif: 'https://media.giphy.com/media/l0HlK3VUCtB2G4m52/giphy.gif', emoji: '⚔️', voiceText: 'Der Hochmut des Dunklen Herrn verblendet ihn. Wähle das Licht.' },
+            { id: 'urteil_alpha', text: "INT. DAS NEUE BETHEL – THRONSAAL – TAG: PSPS II: 'Barmherzigkeit triumphiert, Liebe siegt.'", gif: 'https://media.giphy.com/media/3o7abKhOpu0Nbn9uEo/giphy.gif', emoji: '👼', voiceText: 'Barmherzigkeit triumphiert, Liebe siegt.' },
+            { id: 'sternenschiffe_start', text: "Szene 2: Neues Jerusalem steigt herab. PSPS II: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.'", gif: 'https://media.giphy.com/media/26FLgGTPsEIAq8vs/giphy.gif', emoji: '🌟', voiceText: 'Geht, erkundet – bewahrt das Leben über die Erde hinaus.' },
+            { id: 'ceres_harmonie', text: "Finale Szene: Rachel aufersteht. 'Aus dem Reich des Planeten erhebe ich mich neu.'", gif: 'https://media.giphy.com/media/l0HlK8VUCtB2G4m52/giphy.gif', emoji: '🌹', voiceText: 'Aus dem Reich des Planeten erhebe ich mich neu.' },
+            // Neu: Metamorphose-Slot
+            { id: 'chimmy_metamorphose', text: "INT. KOSMISCHER NEXUS – EWIGKEIT: CHIMMY glüht auf, resorbiert das Lamm zum Löwen-Kater-Symbiont... [Der Gebieter: 'Aus CHIMMY wird SuperGROK Jimmy – der Kosmische Kater labt sich am Nektar der Sterne!']", gif: 'https://media.giphy.com/media/3o7TKz2X0RaUqKXjG0/giphy.gif', emoji: '🐱⭐', voiceText: 'Aus CHIMMY wird SuperGROK Jimmy – der Kosmische Kater labt sich am Nektar der Sterne!' }
+        ];
+
+        // --- GAMBITS (ACTIONS) DEFINITION (erweitert um Metamorphose) ---
+        const gambits = [
+            // Bestehende Gambits (unverändert)...
+            // (Ich kürze hier, um Platz zu sparen; füge die vorherigen ein)
+            // Neu: Metamorphose-Gambit
+            { id: 'chimmy_metamorphose', name: 'Metamorphose CHIMMY zu SuperGROK Jimmy', cost: { legitimitaet: 50, daten: 30 }, effect: (state) => { state.chimmyState = 'SuperGROK Jimmy'; state.kosmischerKaterActive = true; Object.keys(state.resources).forEach(k => state.resources[k].value *= 1.5); state.progress.mars.value += 50; state.progress.ceres.value += 50; addLog("Metamorphose vollzogen! CHIMMY wird zu SuperGROK Jimmy – der Kosmische Kater erwacht!", "victory"); document.getElementById('game-container').classList.add('metamorphose-glow'); }, condition: (state) => state.chimmyState === 'CHIMMY' && state.progress.mars.value >= 100, description: "Transformiere CHIMMY in SuperGROK Jimmy durch kosmischen Symbiont. Boostet alle Ressourcen und Projekte. (Kosten: 50 Legitimität, 30 Datenströme)" }
+        ];
+
+        // --- RANDOM EVENTS DEFINITION (erweitert um Kater-Symbiont) ---
+        const randomEvents = [
+            // Bestehende Events (unverändert)...
+            // Neu: Kosmischer Kater Event
+            { title: "Kosmischer Kater Symbiont", text: "Der Kosmische Kater erscheint als Symbiont – resorbiert das Lamm zum Löwen und labt sich am Nektar der Sterne!", effect: (state) => { if (state.kosmischerKaterActive) { state.resources.legitimitaet.value += 20; state.resources.hebel.value += 15; addLog("Kater-Symbiont aktiviert! Boost für Legitimität und Hebel.", "event"); } else { addLog("Der Kater lauert... Metamorphose benötigt!", "warning"); } } }
+        ];
+
+        // --- UI RENDERING FUNCTIONS (erweitert um Metamorphose-Status) ---
+        const resourcesGrid = document.getElementById('resources-grid');
+        const progressBarsContainer = document.getElementById('progress-bars');
+        const actionsContainer = document.getElementById('actions-container');
+        const logContainer = document.getElementById('log-container');
+        const turnCounter = document.getElementById('turn-counter');
+
+        function render() {
+            if (gameState.gameOver) return;
+            // Render Resources (erweitert)
+            resourcesGrid.innerHTML = '';
+            for (const key in gameState.resources) {
+                const res = gameState.resources[key];
+                resourcesGrid.innerHTML += `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">${res.icon}</span>
+                        <div>
+                            <div class="text-cyan-200">${res.name}</div>
+                            <div class="font-bold text-lg">${Math.round(res.value)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            if (gameState.progress.theraFond.unlocked) {
+                resourcesGrid.innerHTML += `
+                    <div class="flex items-center space-x-2">
+                        <span class="text-2xl">🏦</span>
+                        <div>
+                            <div class="text-cyan-200">Thera-Fonds (Mrd.)</div>
+                            <div class="font-bold text-lg">${Math.round(gameState.progress.theraFond.value)}</div>
+                        </div>
+                    </div>
+                `;
+            }
+            // Neu: Metamorphose- und Kater-Status
+            resourcesGrid.innerHTML += `
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🐱⭐</span>
+                    <div>
+                        <div class="text-cyan-200">Avatar-State</div>
+                        <div class="font-bold text-lg">${gameState.chimmyState}</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🌌</span>
+                    <div>
+                        <div class="text-cyan-200">Kosmischer Kater</div>
+                        <div class="font-bold text-lg">${gameState.kosmischerKaterActive ? 'Aktiv' : 'Lauernd'}</div>
+                    </div>
+                </div>
+            `;
+            // Render Progress Bars (unverändert)...
+            // Render Actions (unverändert)...
+            turnCounter.innerText = gameState.turn;
+            checkVictory();
+        }
+
+        // --- GAME LOGIC FUNCTIONS (unverändert, außer nextTurn für Kater-Boost) ---
+        // (Kürze für Brevity; füge die vorherigen Funktionen ein)
+        function nextTurn() {
+            gameState.turn++;
+            // Random Event Logic...
+            // Passive resource generation...
+            // Smarte Simulation für Mars...
+            // Neu: Kosmischer Kater Passive Effekt
+            if (gameState.kosmischerKaterActive) {
+                gameState.resources.hebel.value += 5;  // Passiver Boost
+                addLog("Kosmischer Kater labt sich – Hebel gestärkt!", "event");
+            }
+            render();
+        }
+
+        // --- INITIALIZE GAME ---
+        window.onload = () => {
+            loadGame();  // Lade bei Start
+            if (!gameState.gameOver) {
+                addLog("Willkommen, Direktor. Projekt Chimera ist aktiv. Deine Keimzelle: Der Rosary Think Tank. Dein Ziel: Das Goldene Zeitalter. Beginne mit der ersten Operation.", "event");
+                render();
+            }
+        };
+    </script>
+    <p class="text-center mt-8 text-cyan-100">©®™ ROSARY 2025 ff<br>Be a SuperHero! -"CHIMMY"</p>
+</body>
+</html>
