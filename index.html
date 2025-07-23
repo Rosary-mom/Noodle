@@ -6,6 +6,7 @@
     <title>Projekt Chimera: Das Goldene Zeitalter - Logbuch der Menschheiten</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         body {
             font-family: 'Roboto Mono', monospace;
@@ -17,7 +18,7 @@
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
         }
-        .resource-card, .project-card, .log-card, .matrix-card, .cockpit-card {
+        .resource-card, .project-card, .log-card, .matrix-card, .cockpit-card, .explorer-card {
             background-color: rgba(0, 20, 40, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
@@ -70,6 +71,10 @@
         }
         .hidden {
             display: none;
+        }
+        #solar-system {
+            width: 100%;
+            height: 400px;
         }
     </style>
 </head>
@@ -160,6 +165,14 @@
             <p class="mt-4 text-center">PSPS II: "May this cockpit be part of Your mission."</p>
         </div>
 
+        <!-- New Solar System Explorer Section -->
+        <div class="explorer-card mb-8">
+            <h2 class="text-2xl font-orbitron mb-4 text-center">Solar System Explorer: 3D Weltraumforschung</h2>
+            <p class="text-center mb-4">Erkunde das Sonnensystem in 3D! Wage Gambits auf Planeten, sammle Ressourcen und forsche für CHIMERA. Basierend auf der Vision von Lord Archbishop Dr. Uwe A. E. Rosenkranz.</p>
+            <div id="solar-system"></div>
+            <p class="mt-4 text-center">Klicke auf Planeten, um Gambits zu starten (z.B. Mars-Kolonie erweitern).</p>
+        </div>
+
         <img src="https://media.giphy.com/media/l41m3ywjOxm9SzAhG/giphy.gif" alt="Game Loop GIF" class="w-full mb-8 rounded-lg shadow-lg mx-auto" style="max-width: 600px;">
 
         <p class="mt-8 text-sm text-center">©®™ ROSARY 2025 ff</p>
@@ -235,9 +248,82 @@
             updateResources();
             addLog('Neuer Sektor erkundet: Settlement +10%.');
             alert('Exploration successful! Humanity expands.');
+            // Trigger 3D animation update (e.g., zoom or new planet)
         });
 
         updateResources();
+
+        // 3D Solar System Explorer with Three.js
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / 400, 0.1, 1000); // Adjusted for container height
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth * 0.8, 400); // Responsive width
+        document.getElementById('solar-system').appendChild(renderer.domElement);
+
+        // Basic lighting
+        const light = new THREE.PointLight(0xffffff, 1, 1000);
+        light.position.set(0, 0, 0);
+        scene.add(light);
+
+        // Sun
+        const sunGeometry = new THREE.SphereGeometry(5, 32, 32);
+        const sunMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+        const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+        scene.add(sun);
+
+        // Planets (simple example: Earth, Mars)
+        const earthGeometry = new THREE.SphereGeometry(1, 32, 32);
+        const earthMaterial = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+        earth.position.x = 10;
+        scene.add(earth);
+
+        const marsGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+        const marsMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+        const mars = new THREE.Mesh(marsGeometry, marsMaterial);
+        mars.position.x = 15;
+        scene.add(mars);
+
+        camera.position.z = 30;
+
+        // Animation loop for orbits
+        let angle = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            angle += 0.01;
+            earth.position.x = 10 * Math.cos(angle);
+            earth.position.z = 10 * Math.sin(angle);
+            mars.position.x = 15 * Math.cos(angle * 0.8);
+            mars.position.z = 15 * Math.sin(angle * 0.8);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Interaction: Click on planets
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        function onClick(event) {
+            mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+            mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children);
+            if (intersects.length > 0) {
+                const obj = intersects[0].object;
+                if (obj === mars) {
+                    addLog('Mars erkundet: Gambit gestartet - Kolonie erweitert!');
+                    data += 1;
+                    updateResources();
+                    alert('Mars Gambit: +1 Datenspeicher. Forschung vorangebracht!');
+                } else if (obj === earth) {
+                    addLog('Erde erkundet: Ressourcen gesammelt.');
+                    capital += 1;
+                    updateResources();
+                    alert('Earth Exploration: +1 Kapital. Klimaziele unterstützt.');
+                }
+            }
+        }
+        renderer.domElement.addEventListener('click', onClick);
+
     </script>
 </body>
 </html>
