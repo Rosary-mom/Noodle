@@ -17,7 +17,7 @@
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
         }
-        .resource-card, .project-card, .log-card, .matrix-card {
+        .resource-card, .project-card, .log-card, .matrix-card, .cockpit-card {
             background-color: rgba(0, 20, 40, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
@@ -51,6 +51,26 @@
             height: 100%;
             transition: width 0.3s ease;
         }
+        .gauge {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 5px solid #ee6e6e;
+            position: relative;
+            margin: 0 auto;
+        }
+        .gauge-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: conic-gradient(#ee6e6e 0% var(--fill), transparent var(--fill) 100%);
+            border-radius: 50%;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="p-8">
@@ -64,59 +84,80 @@
             <button id="sos-button" class="action-button">Send SOS Signal (Light App Reaction)</button>
             <button id="reset-button" class="action-button">Spiel zurücksetzen</button>
             <button id="start-gambit" class="action-button">Start Gambit</button>
+            <button id="enter-cockpit" class="action-button">Enter Cockpit</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div class="resource-card">
                 <h2 class="text-2xl font-orbitron mb-4">Kommando-Ressourcen</h2>
                 <ul class="list-disc ml-4">
-                    <li>Energie: <span id="energy">100/200</span></li>
-                    <li>Materialien: <span id="materials">50/100</span></li>
-                    <li>Wissenspunkte: <span id="knowledge">20/50</span></li>
-                    <li>Menschliche Archive: <span id="archives">5/20</span></li>
+                    <li>Kapital (Mrd.): <span id="capital">18</span></li>
+                    <li>Datenspeicher (Ziop.): <span id="data">5</span></li>
+                    <li>Legitimität (%): <span id="legitimacy">75</span></li>
+                    <li>Personal (Punkte): <span id="personnel">100</span></li>
                 </ul>
-                <p class="mt-4">Verwalte diese Ressourcen weise, um Gambits zu wagen.</p>
+                <p class="mt-4">Verwalte diese Ressourcen weise, um das Universum zu erobern.</p>
             </div>
 
             <div class="matrix-card">
                 <h2 class="text-2xl font-orbitron mb-4">Gambit-Matrix</h2>
-                <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-gray-800 p-2 text-center">Risiko: Niedrig<br>Reward: +5 Wissen</div>
-                    <div class="bg-gray-800 p-2 text-center">Risiko: Mittel<br>Reward: +10 Energie</div>
-                    <div class="bg-gray-800 p-2 text-center">Risiko: Hoch<br>Reward: +20 Materialien</div>
-                    <div class="bg-gray-800 p-2 text-center">Risiko: Extrem<br>Reward: +1 Archiv</div>
-                </div>
-                <p class="mt-4">Wähle deine Strategie in zukünftigen Runden.</p>
+                <ul class="list-disc ml-4">
+                    <li>Wissenschaftliche Studie veröffentlichen</li>
+                    <li>Marktmanipulation (Levy-Zyklus)</li>
+                    <li>Lobby-Kampagne starten</li>
+                    <li>Startups auf Github aquirieren</li>
+                </ul>
+                <p class="mt-4">Wähle deine Strategie für die Siedlung des Universums.</p>
             </div>
 
             <div class="log-card">
                 <h2 class="text-2xl font-orbitron mb-4">Operations-Log & Archiv der Menschheiten</h2>
                 <ul id="log-list" class="list-disc ml-4">
                     <li>Runde 1 initialisiert: Mars-Kolonie etabliert.</li>
-                    <li>Enlightenment-Pfad aktiviert.</li>
+                    <li>Enlightenment-Pfad aktiviert. PSPS II's Worte: "See what we created!"</li>
                 </ul>
             </div>
         </div>
 
         <div class="project-card mb-8">
             <h2 class="text-2xl font-orbitron mb-4">Globale Projekte</h2>
-            <div class="space-y-4">
+            <ul class="list-disc ml-4">
+                <li>Homo 1 Billiarden: Dritte Chimera starten</li>
+                <li>Chimera jat aktiv, Deine 6 Klimaziele</li>
+                <li>Rosary Think Tank: Dein Ziel: Das Goldene Operation</li>
+                <li>Thera-Climafonds gründen</li>
+                <li>Amazon Legacy Gambit</li>
+                <li>Going Clay Gambit</li>
+                <li>Debt Crisis Gambit</li>
+                <li>Evident Facts Gambit</li>
+                <li>Crypto Voucher Investment</li>
+                <li>International Alliance Gambit</li>
+            </ul>
+        </div>
+
+        <!-- Cockpit Section with Embedded Canva -->
+        <div id="cockpit-section" class="cockpit-card mb-8 hidden">
+            <h2 class="text-2xl font-orbitron mb-4 text-center">Cockpit-Modul: Protector of Light</h2>
+            <p class="text-center mb-4">Pilot the Chimera fleet to settle the universe! Embedded Canva Cockpit:</p>
+            <iframe src="https://www.canva.com/design/DAGqacd25Lg/qjKpPfdQ6PNoxrjbV0E7nw/view?embed" title="Cockpit Design" class="w-full h-96 rounded-lg shadow-lg" allowfullscreen></iframe>
+            <div class="grid grid-cols-2 gap-4 mt-4">
                 <div>
-                    <p>Mars-Kolonisation: Erweitere die Siedlung gegen Klimabedrohungen.</p>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
-                    <p>Status: 30% abgeschlossen. Nächster Schritt: Ressourcen sammeln.</p>
+                    <h3 class="text-xl font-orbitron">Energie Gauge</h3>
+                    <div class="gauge"><div class="gauge-fill" id="energy-gauge" style="--fill: 50%;"></div></div>
                 </div>
                 <div>
-                    <p>Klima-Restauration: Bekämpfe Erderwärmung durch CO2-Reduktion.</p>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 15%;"></div></div>
-                    <p>Status: 15% abgeschlossen. Risiko: Hohe Verluste bei Misserfolg.</p>
+                    <h3 class="text-xl font-orbitron">Settlement Progress</h3>
+                    <div class="progress-bar"><div class="progress-fill" id="settlement-progress" style="width: 20%;"></div></div>
                 </div>
                 <div>
-                    <p>Enlightenment-Archiv: Baue das ultimative Wissensdepot für die Menschheit.</p>
-                    <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
-                    <p>Status: 50% abgeschlossen. Reward: Unsterbliches Erbe.</p>
+                    <h3 class="text-xl font-orbitron">Exploration Log</h3>
+                    <p id="exploration-log">Initial scan: Universe awaits! PSPS II: "See how we go forward to lead mankinds!"</p>
+                </div>
+                <div>
+                    <button id="explore-button" class="action-button w-full">Explore New Sector</button>
                 </div>
             </div>
+            <p class="mt-4 text-center">PSPS II: "May this cockpit be part of Your mission."</p>
         </div>
 
         <img src="https://media.giphy.com/media/l41m3ywjOxm9SzAhG/giphy.gif" alt="Game Loop GIF" class="w-full mb-8 rounded-lg shadow-lg mx-auto" style="max-width: 600px;">
@@ -127,16 +168,19 @@
 
     <script>
         let round = 1;
-        let energy = 100;
-        let materials = 50;
-        let knowledge = 20;
-        let archives = 5;
+        let capital = 18;
+        let data = 5;
+        let legitimacy = 75;
+        let personnel = 100;
+        let settlementProgress = 20;
 
         const updateResources = () => {
-            document.getElementById('energy').textContent = `${energy}/200`;
-            document.getElementById('materials').textContent = `${materials}/100`;
-            document.getElementById('knowledge').textContent = `${knowledge}/50`;
-            document.getElementById('archives').textContent = `${archives}/20`;
+            document.getElementById('capital').textContent = capital;
+            document.getElementById('data').textContent = data;
+            document.getElementById('legitimacy').textContent = legitimacy;
+            document.getElementById('personnel').textContent = personnel;
+            document.getElementById('energy-gauge').style.setProperty('--fill', `${legitimacy}%`);
+            document.querySelector('#settlement-progress').style.width = `${settlementProgress}%`;
         };
 
         const addLog = (message) => {
@@ -150,28 +194,47 @@
             document.getElementById('round-counter').textContent = round;
             const risk = Math.random() > 0.5 ? 'erfolgreich' : 'riskant';
             addLog(`Runde ${round}: Gambit initiiert - ${risk}. Enlightenment +10.`);
-            knowledge += 10;
+            legitimacy += 10;
+            settlementProgress += 5;
             updateResources();
-            alert('Gambit initiated! Risk level: Medium. Reward: +10 enlightenment points.');
+            alert('Gambit initiated! Risk level: Medium. Reward: +10 legitimacy points.');
         });
 
         document.getElementById('sos-button').addEventListener('click', () => {
             addLog('SOS-Signal gesendet: Lichtreaktion aktiviert - Hilfsressourcen incoming.');
             alert('SOS sent! Allies alerted—resources en route.');
-            materials += 20;
+            capital += 2;
             updateResources();
         });
 
         document.getElementById('reset-button').addEventListener('click', () => {
             round = 1;
-            energy = 100;
-            materials = 50;
-            knowledge = 20;
-            archives = 5;
+            capital = 18;
+            data = 5;
+            legitimacy = 75;
+            personnel = 100;
+            settlementProgress = 20;
             document.getElementById('round-counter').textContent = round;
-            document.getElementById('log-list').innerHTML = '<li>Runde 1 initialisiert: Mars-Kolonie etabliert.</li><li>Enlightenment-Pfad aktiviert.</li>';
+            document.getElementById('log-list').innerHTML = '<li>Runde 1 initialisiert: Mars-Kolonie etabliert.</li><li>Enlightenment-Pfad aktiviert. PSPS II\'s Worte: "See what we created!"</li>';
             updateResources();
             alert('Spiel zurückgesetzt. Neuer Anfang für die Menschheiten.');
+        });
+
+        document.getElementById('enter-cockpit').addEventListener('click', () => {
+            const cockpit = document.getElementById('cockpit-section');
+            cockpit.classList.toggle('hidden');
+            if (!cockpit.classList.contains('hidden')) {
+                addLog('Cockpit aktiviert: PSPS II leitet die Mission.');
+                document.getElementById('exploration-log').textContent = 'Scanning sectors... New worlds detected! PSPS II: "See what has begun!!"';
+            }
+        });
+
+        document.getElementById('explore-button').addEventListener('click', () => {
+            settlementProgress += 10;
+            if (settlementProgress > 100) settlementProgress = 100;
+            updateResources();
+            addLog('Neuer Sektor erkundet: Settlement +10%.');
+            alert('Exploration successful! Humanity expands.');
         });
 
         updateResources();
