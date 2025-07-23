@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Chimera: Das Golden-Widder-Alter - Logbuch der Menschheiten</title>
+    <title>Projekt Chimera: Das Goldene Zeitalter - Logbuch der Menschheiten</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -11,17 +11,19 @@
             font-family: 'Roboto Mono', monospace;
             background-color: #0e0e0e;
             color: #ee6e6e;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Concept_Mars_colony.jpg'); /* NASA public domain Mars-Siedlung Konzept (Frei nutzbar) */
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/3/39/Concept_Mars_colony.jpg');
             background-size: cover;
         }
         .font-orbitron {
             font-family: 'Orbitron', sans-serif;
         }
-        .resource-card {
+        .resource-card, .project-card, .log-card, .matrix-card {
             background-color: rgba(0, 20, 40, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
+            padding: 1rem;
+            border-radius: 0.5rem;
         }
         .action-button {
             background-color: rgba(0, 100, 100, 0.6);
@@ -29,46 +31,150 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-right: 1rem;
         }
         .action-button:hover {
             background-color: rgba(0, 150, 150, 0.8);
             transform: scale(1.05);
         }
+        .progress-bar {
+            background-color: rgba(255, 255, 255, 0.2);
+            height: 0.5rem;
+            border-radius: 0.25rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #ee6e6e;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body class="p-8">
-    <div class="max-w-4xl mx-auto">
-        <h1 class="text-4xl font-orbitron mb-4">PROJEKT CHIMERA: Logbuch der Menschheiten</h1>
-        <p class="text-2xl mb-6">Operation: Das Goldene Zeitalter // RUNDE: <span id="round-counter">1</span></p>
-        
-        <img src="https://example.com/climate-crisis.gif" alt="Climate Crisis GIF" class="w-full mb-8 rounded-lg shadow-lg"> <!-- Replace with actual GIF URL -->
-        
-        <div class="resource-card p-6 mb-8 rounded-lg">
-            <h2 class="text-3xl font-orbitron mb-4">Operations-Log & Archiv der Menschheiten</h2>
-            <p>In GAMBITS, wage strategic risks to advance humanity's path to enlightenment. Balance resources, face crises, and build the Chimera archive.</p>
-            <ul class="list-disc ml-6">
-                <li>Current Gambit: Colonize Mars amid climate threats.</li>
-                <li>Goal: Achieve enlightenment score of 100.</li>
-                <li>Log: Round 1 - Initial setup complete.</li>
-            </ul>
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-4xl font-orbitron mb-4 text-center">PROJEKT CHIMERA: Logbuch der Menschheiten</h1>
+        <p class="text-2xl mb-6 text-center">Operation: Das Goldene Zeitalter // RUNDE: <span id="round-counter">1</span></p>
+
+        <img src="https://media.giphy.com/media/kEESrxmc9pd9Jb064Q/giphy.gif" alt="Climate Crisis GIF" class="w-full mb-8 rounded-lg shadow-lg mx-auto" style="max-width: 600px;">
+
+        <div class="flex justify-center mb-8">
+            <button id="sos-button" class="action-button">Send SOS Signal (Light App Reaction)</button>
+            <button id="reset-button" class="action-button">Spiel zurücksetzen</button>
+            <button id="start-gambit" class="action-button">Start Gambit</button>
         </div>
-        
-        <img src="https://example.com/game-loop.gif" alt="Game Loop GIF" class="w-full mb-8 rounded-lg shadow-lg"> <!-- Replace with actual GIF URL -->
-        
-        <button id="start-gambit" class="action-button px-6 py-3 text-lg font-orbitron text-white rounded-lg">Start Gambit</button>
-        
-        <p class="mt-8 text-sm">©®™ ROSARY 2025 ff</p>
-        <p class="text-lg font-orbitron">Be a SuperHero! -"CHIMMY"</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="resource-card">
+                <h2 class="text-2xl font-orbitron mb-4">Kommando-Ressourcen</h2>
+                <ul class="list-disc ml-4">
+                    <li>Energie: <span id="energy">100/200</span></li>
+                    <li>Materialien: <span id="materials">50/100</span></li>
+                    <li>Wissenspunkte: <span id="knowledge">20/50</span></li>
+                    <li>Menschliche Archive: <span id="archives">5/20</span></li>
+                </ul>
+                <p class="mt-4">Verwalte diese Ressourcen weise, um Gambits zu wagen.</p>
+            </div>
+
+            <div class="matrix-card">
+                <h2 class="text-2xl font-orbitron mb-4">Gambit-Matrix</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-gray-800 p-2 text-center">Risiko: Niedrig<br>Reward: +5 Wissen</div>
+                    <div class="bg-gray-800 p-2 text-center">Risiko: Mittel<br>Reward: +10 Energie</div>
+                    <div class="bg-gray-800 p-2 text-center">Risiko: Hoch<br>Reward: +20 Materialien</div>
+                    <div class="bg-gray-800 p-2 text-center">Risiko: Extrem<br>Reward: +1 Archiv</div>
+                </div>
+                <p class="mt-4">Wähle deine Strategie in zukünftigen Runden.</p>
+            </div>
+
+            <div class="log-card">
+                <h2 class="text-2xl font-orbitron mb-4">Operations-Log & Archiv der Menschheiten</h2>
+                <ul id="log-list" class="list-disc ml-4">
+                    <li>Runde 1 initialisiert: Mars-Kolonie etabliert.</li>
+                    <li>Enlightenment-Pfad aktiviert.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="project-card mb-8">
+            <h2 class="text-2xl font-orbitron mb-4">Globale Projekte</h2>
+            <div class="space-y-4">
+                <div>
+                    <p>Mars-Kolonisation: Erweitere die Siedlung gegen Klimabedrohungen.</p>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 30%;"></div></div>
+                    <p>Status: 30% abgeschlossen. Nächster Schritt: Ressourcen sammeln.</p>
+                </div>
+                <div>
+                    <p>Klima-Restauration: Bekämpfe Erderwärmung durch CO2-Reduktion.</p>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 15%;"></div></div>
+                    <p>Status: 15% abgeschlossen. Risiko: Hohe Verluste bei Misserfolg.</p>
+                </div>
+                <div>
+                    <p>Enlightenment-Archiv: Baue das ultimative Wissensdepot für die Menschheit.</p>
+                    <div class="progress-bar"><div class="progress-fill" style="width: 50%;"></div></div>
+                    <p>Status: 50% abgeschlossen. Reward: Unsterbliches Erbe.</p>
+                </div>
+            </div>
+        </div>
+
+        <img src="https://media.giphy.com/media/l41m3ywjOxm9SzAhG/giphy.gif" alt="Game Loop GIF" class="w-full mb-8 rounded-lg shadow-lg mx-auto" style="max-width: 600px;">
+
+        <p class="mt-8 text-sm text-center">©®™ ROSARY 2025 ff</p>
+        <p class="text-lg font-orbitron text-center">Be a SuperHero! -"CHIMMY"</p>
     </div>
 
     <script>
         let round = 1;
+        let energy = 100;
+        let materials = 50;
+        let knowledge = 20;
+        let archives = 5;
+
+        const updateResources = () => {
+            document.getElementById('energy').textContent = `${energy}/200`;
+            document.getElementById('materials').textContent = `${materials}/100`;
+            document.getElementById('knowledge').textContent = `${knowledge}/50`;
+            document.getElementById('archives').textContent = `${archives}/20`;
+        };
+
+        const addLog = (message) => {
+            const li = document.createElement('li');
+            li.textContent = message;
+            document.getElementById('log-list').appendChild(li);
+        };
+
         document.getElementById('start-gambit').addEventListener('click', () => {
             round++;
             document.getElementById('round-counter').textContent = round;
-            alert('Gambit initiated! New round started. Risk level: Medium. Reward: +10 enlightenment points.');
-            // Expand here for more game logic, e.g., random events or resource updates.
+            const risk = Math.random() > 0.5 ? 'erfolgreich' : 'riskant';
+            addLog(`Runde ${round}: Gambit initiiert - ${risk}. Enlightenment +10.`);
+            knowledge += 10;
+            updateResources();
+            alert('Gambit initiated! Risk level: Medium. Reward: +10 enlightenment points.');
         });
+
+        document.getElementById('sos-button').addEventListener('click', () => {
+            addLog('SOS-Signal gesendet: Lichtreaktion aktiviert - Hilfsressourcen incoming.');
+            alert('SOS sent! Allies alerted—resources en route.');
+            materials += 20;
+            updateResources();
+        });
+
+        document.getElementById('reset-button').addEventListener('click', () => {
+            round = 1;
+            energy = 100;
+            materials = 50;
+            knowledge = 20;
+            archives = 5;
+            document.getElementById('round-counter').textContent = round;
+            document.getElementById('log-list').innerHTML = '<li>Runde 1 initialisiert: Mars-Kolonie etabliert.</li><li>Enlightenment-Pfad aktiviert.</li>';
+            updateResources();
+            alert('Spiel zurückgesetzt. Neuer Anfang für die Menschheiten.');
+        });
+
+        updateResources();
     </script>
 </body>
 </html>
